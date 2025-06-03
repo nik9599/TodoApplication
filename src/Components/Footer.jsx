@@ -3,8 +3,8 @@
 
 export default function Footer() {
   return (
-    <nav className="p-4 text-center">
+    <footer className="p-4 text-center">
       <h1  >This is Footer</h1>
-    </nav>
+    </footer>
   );
 }
