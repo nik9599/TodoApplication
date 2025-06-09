@@ -1,9 +1,1 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Optional: your own variables */
-:root {
-  --foreground: #111;
-  --background: #fff;
-}
+@import 'tailwindcss';

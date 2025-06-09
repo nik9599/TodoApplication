@@ -1,28 +1,42 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, Target, TrendingUp, Calendar, Star } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import "../globals.css"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { CheckCircle, Target, TrendingUp, Calendar, Star } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import "../globals.css";
 
 export default function WelcomeUser() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen ">
       {/* Header */}
-      <header className="px-4 lg:px-6 h-14 flex items-center border-b">
+      <header className="px-4 lg:px-6 h-14 flex items-center border-b  h-15">
         <Link href="/" className="flex items-center justify-center">
           <CheckCircle className="h-6 w-6 text-blue-600" />
           <span className="ml-2 text-lg font-bold">GoalTodo</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link href="#features" className="text-sm font-medium hover:underline underline-offset-4">
+          <Link
+            href="#features"
+            className="text-sm font-medium hover:underline underline-offset-4"
+          >
             Features
           </Link>
-          <Link href="#pricing" className="text-sm font-medium hover:underline underline-offset-4">
+          <Link
+            href="#pricing"
+            className="text-sm font-medium hover:underline underline-offset-4"
+          >
             Pricing
           </Link>
-          <Link href="#about" className="text-sm font-medium hover:underline underline-offset-4">
+          <Link
+            href="#about"
+            className="text-sm font-medium hover:underline underline-offset-4"
+          >
             About
           </Link>
         </nav>
@@ -36,15 +50,21 @@ export default function WelcomeUser() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    Turn Your Dreams Into <span className="text-blue-600">Achievable Goals</span>
+                    Turn Your Dreams Into{" "}
+                    <span className="text-blue-600">Achievable Goals</span>
                   </h1>
                   <p className="max-w-[600px] text-gray-600 md:text-xl">
-                    Break down your biggest aspirations into manageable tasks. Our smart todo system helps you stay
-                    focused, track progress, and celebrate every milestone on your journey to success.
+                    Break down your biggest aspirations into manageable tasks.
+                    Our smart todo system helps you stay focused, track
+                    progress, and celebrate every milestone on your journey to
+                    success.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button size="lg" className="h-12 px-8 bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button
+                    size="lg"
+                    className="h-12 px-8 bg-blue-600 hover:bg-blue-700 text-white"
+                  >
                     Start Achieving Today
                   </Button>
                   <Button variant="outline" size="lg" className="h-12 px-8">
@@ -76,15 +96,23 @@ export default function WelcomeUser() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
+        <section
+          id="features"
+          className="w-full py-12 md:py-24 lg:py-32 bg-gray-50"
+        >
           <div className="container px-4 md:px-6 mx-auto max-w-7xl">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-600">How It Works</div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Your Goals, Simplified</h2>
+                <div className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-600">
+                  How It Works
+                </div>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Your Goals, Simplified
+                </h2>
                 <p className="max-w-[900px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Transform overwhelming goals into a clear, actionable roadmap. Our proven system helps you maintain
-                  momentum and achieve consistent progress.
+                  Transform overwhelming goals into a clear, actionable roadmap.
+                  Our proven system helps you maintain momentum and achieve
+                  consistent progress.
                 </p>
               </div>
             </div>
@@ -94,7 +122,8 @@ export default function WelcomeUser() {
                   <Target className="h-10 w-10 text-blue-600" />
                   <CardTitle>Goal Breakdown</CardTitle>
                   <CardDescription>
-                    Break large goals into smaller, manageable tasks that feel achievable and keep you motivated.
+                    Break large goals into smaller, manageable tasks that feel
+                    achievable and keep you motivated.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -103,8 +132,8 @@ export default function WelcomeUser() {
                   <TrendingUp className="h-10 w-10 text-blue-600" />
                   <CardTitle>Progress Tracking</CardTitle>
                   <CardDescription>
-                    Visualize your progress with intuitive charts and celebrate milestones as you move closer to your
-                    goals.
+                    Visualize your progress with intuitive charts and celebrate
+                    milestones as you move closer to your goals.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -113,7 +142,8 @@ export default function WelcomeUser() {
                   <Calendar className="h-10 w-10 text-blue-600" />
                   <CardTitle>Smart Scheduling</CardTitle>
                   <CardDescription>
-                    Prioritize tasks based on deadlines and importance, ensuring you focus on what matters most.
+                    Prioritize tasks based on deadlines and importance, ensuring
+                    you focus on what matters most.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -138,8 +168,9 @@ export default function WelcomeUser() {
                     Why Todo Lists Are Goal Achievers' Secret Weapon
                   </h2>
                   <p className="text-gray-600 md:text-lg">
-                    Research shows that people who write down their goals are 42% more likely to achieve them. Here's
-                    how our todo system amplifies that success:
+                    Research shows that people who write down their goals are
+                    42% more likely to achieve them. Here's how our todo system
+                    amplifies that success:
                   </p>
                 </div>
                 <ul className="grid gap-4">
@@ -148,7 +179,8 @@ export default function WelcomeUser() {
                     <div>
                       <h3 className="font-semibold">Clear Direction</h3>
                       <p className="text-sm text-gray-600">
-                        Transform vague aspirations into specific, actionable steps
+                        Transform vague aspirations into specific, actionable
+                        steps
                       </p>
                     </div>
                   </li>
@@ -157,7 +189,8 @@ export default function WelcomeUser() {
                     <div>
                       <h3 className="font-semibold">Momentum Building</h3>
                       <p className="text-sm text-gray-600">
-                        Each completed task creates positive momentum toward your bigger goals
+                        Each completed task creates positive momentum toward
+                        your bigger goals
                       </p>
                     </div>
                   </li>
@@ -166,7 +199,8 @@ export default function WelcomeUser() {
                     <div>
                       <h3 className="font-semibold">Accountability</h3>
                       <p className="text-sm text-gray-600">
-                        Visual progress tracking keeps you accountable to your commitments
+                        Visual progress tracking keeps you accountable to your
+                        commitments
                       </p>
                     </div>
                   </li>
@@ -175,7 +209,8 @@ export default function WelcomeUser() {
                     <div>
                       <h3 className="font-semibold">Stress Reduction</h3>
                       <p className="text-sm text-gray-600">
-                        Organized tasks reduce mental clutter and decision fatigue
+                        Organized tasks reduce mental clutter and decision
+                        fatigue
                       </p>
                     </div>
                   </li>
@@ -190,7 +225,9 @@ export default function WelcomeUser() {
           <div className="container px-4 md:px-6 mx-auto max-w-7xl">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Success Stories</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Success Stories
+                </h2>
                 <p className="max-w-[900px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   See how others have transformed their dreams into reality
                 </p>
@@ -202,13 +239,17 @@ export default function WelcomeUser() {
                   <div className="flex items-center gap-2">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-blue-600 text-blue-600" />
+                        <Star
+                          key={i}
+                          className="h-4 w-4 fill-blue-600 text-blue-600"
+                        />
                       ))}
                     </div>
                   </div>
                   <CardDescription>
-                    "I finally finished writing my novel! Breaking it down into daily writing tasks made it feel
-                    possible instead of overwhelming."
+                    "I finally finished writing my novel! Breaking it down into
+                    daily writing tasks made it feel possible instead of
+                    overwhelming."
                   </CardDescription>
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -226,13 +267,17 @@ export default function WelcomeUser() {
                   <div className="flex items-center gap-2">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-blue-600 text-blue-600" />
+                        <Star
+                          key={i}
+                          className="h-4 w-4 fill-blue-600 text-blue-600"
+                        />
                       ))}
                     </div>
                   </div>
                   <CardDescription>
-                    "Lost 30 pounds by breaking my fitness goal into daily workouts and meal prep tasks. The progress
-                    tracking kept me motivated!"
+                    "Lost 30 pounds by breaking my fitness goal into daily
+                    workouts and meal prep tasks. The progress tracking kept me
+                    motivated!"
                   </CardDescription>
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -240,7 +285,9 @@ export default function WelcomeUser() {
                     </div>
                     <div>
                       <p className="text-sm font-medium">Mike Rodriguez</p>
-                      <p className="text-xs text-gray-600">Fitness Enthusiast</p>
+                      <p className="text-xs text-gray-600">
+                        Fitness Enthusiast
+                      </p>
                     </div>
                   </div>
                 </CardHeader>
@@ -250,13 +297,17 @@ export default function WelcomeUser() {
                   <div className="flex items-center gap-2">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-blue-600 text-blue-600" />
+                        <Star
+                          key={i}
+                          className="h-4 w-4 fill-blue-600 text-blue-600"
+                        />
                       ))}
                     </div>
                   </div>
                   <CardDescription>
-                    "Launched my startup by organizing every step from business plan to first customer. This system made
-                    the impossible feel manageable."
+                    "Launched my startup by organizing every step from business
+                    plan to first customer. This system made the impossible feel
+                    manageable."
                   </CardDescription>
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -278,22 +329,34 @@ export default function WelcomeUser() {
           <div className="container px-4 md:px-6 mx-auto max-w-7xl">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Ready to Achieve Your Goals?</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Ready to Achieve Your Goals?
+                </h2>
                 <p className="max-w-[600px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Join thousands of goal achievers who have transformed their dreams into reality. Start your journey
-                  today.
+                  Join thousands of goal achievers who have transformed their
+                  dreams into reality. Start your journey today.
                 </p>
               </div>
               <div className="w-full max-w-sm space-y-2">
                 <form className="flex gap-2">
-                  <Input type="email" placeholder="Enter your email" className="max-w-lg flex-1" />
-                  <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="max-w-lg flex-1"
+                  />
+                  <Button
+                    type="submit"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
                     Get Started
                   </Button>
                 </form>
                 <p className="text-xs text-gray-600">
                   Start free. No credit card required.{" "}
-                  <Link href="/privacy" className="underline underline-offset-2">
+                  <Link
+                    href="/privacy"
+                    className="underline underline-offset-2"
+                  >
                     Privacy Policy
                   </Link>
                 </p>
@@ -329,7 +392,9 @@ export default function WelcomeUser() {
 
       {/* Footer */}
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-gray-600">© {new Date().getFullYear()} GoalTodo. All rights reserved.</p>
+        <p className="text-xs text-gray-600">
+          © {new Date().getFullYear()} GoalTodo. All rights reserved.
+        </p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link href="#" className="text-xs hover:underline underline-offset-4">
             Terms of Service
@@ -343,5 +408,5 @@ export default function WelcomeUser() {
         </nav>
       </footer>
     </div>
-  )
+  );
 }
