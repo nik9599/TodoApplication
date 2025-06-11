@@ -14,34 +14,6 @@ import "../globals.css";
 export default function WelcomeUser() {
   return (
     <div className="flex flex-col min-h-screen ">
-      {/* Header */}
-      <header className="px-4 lg:px-6 h-14 flex items-center border-b  h-15">
-        <Link href="/" className="flex items-center justify-center">
-          <CheckCircle className="h-6 w-6 text-blue-600" />
-          <span className="ml-2 text-lg font-bold">GoalTodo</span>
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link
-            href="#features"
-            className="text-sm font-medium hover:underline underline-offset-4"
-          >
-            Features
-          </Link>
-          <Link
-            href="#pricing"
-            className="text-sm font-medium hover:underline underline-offset-4"
-          >
-            Pricing
-          </Link>
-          <Link
-            href="#about"
-            className="text-sm font-medium hover:underline underline-offset-4"
-          >
-            About
-          </Link>
-        </nav>
-      </header>
-
       <main className="flex-1">
         {/* Hero Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
@@ -390,23 +362,6 @@ export default function WelcomeUser() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-gray-600">
-          © {new Date().getFullYear()} GoalTodo. All rights reserved.
-        </p>
-        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <Link href="#" className="text-xs hover:underline underline-offset-4">
-            Terms of Service
-          </Link>
-          <Link href="#" className="text-xs hover:underline underline-offset-4">
-            Privacy Policy
-          </Link>
-          <Link href="#" className="text-xs hover:underline underline-offset-4">
-            Contact
-          </Link>
-        </nav>
-      </footer>
     </div>
   );
 }

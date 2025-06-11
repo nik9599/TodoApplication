@@ -2,16 +2,17 @@
 "use client"; // Only for app router
 
 import { useEffect } from "react";
-import { redirect } from 'next/navigation'// For App Router (use 'next/router' in pages directory)
+import { redirect } from 'next/navigation'
+
 
 export default function Home() {
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("token") || false; // Or use your auth method
+    const isLoggedIn = localStorage.getItem("token") || true; // Or use your auth method
     if (!isLoggedIn) {
       redirect("/WelcomeUser");
     } else {
-      redirect("/dashboard"); // Optional: where to go if logged in
+      redirect("/Dashboard"); // Optional: where to go if logged in
     }
   }, []);
 
