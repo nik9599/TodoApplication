@@ -1,20 +1,19 @@
-// app/page.tsx or pages/index.js
 "use client"; // Only for app router
 
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import {UserContext} from "@/Components/ContextualStore/UserContext";
 import { redirect } from 'next/navigation'
 
-
 export default function Home() {
-
+  const { isUserLogedIn} = useContext(UserContext)
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("token") || true; // Or use your auth method
-    if (!isLoggedIn) {
+    if (!isUserLogedIn) {
       redirect("/WelcomeUser");
     } else {
       redirect("/Dashboard"); // Optional: where to go if logged in
     }
   }, []);
 
-  return null; // or loading spinner
+  return null; // Optionally show a loading state here
 }

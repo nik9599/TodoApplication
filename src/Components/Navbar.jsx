@@ -1,16 +1,25 @@
 "use client"; // Add this to make it a client component if it uses hooks
 
 import Link from "next/link";
+import {useContext} from "react";
 import { useRouter } from "next/navigation"
-import { CheckCircle, LogOut, Search, User } from "lucide-react";
+import { CheckCircle, LogOut, Search, User, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button"
+import {UserContext} from "@/Components/ContextualStore/UserContext";
+
 export default function NavBar() {
   const router = useRouter()
-  const isLoggedIn = true;
+  const { isUserLogedIn } = useContext(UserContext)
+  const isLoggedIn = isUserLogedIn;
   
   const handleLogout = () => {
+    router.push("/Auth/SignUp")
+  }
+
+  const handleLogin = () => {
     router.push("/Auth/Login")
   }
+
   return (
     <>
       {isLoggedIn ? (
@@ -58,6 +67,23 @@ export default function NavBar() {
               className="text-sm font-medium hover:underline underline-offset-4"
             >
               About
+            </Link>
+            <Link
+                href="/Auth/Login"
+                className="text-sm font-medium hover:underline underline-offset-4"
+            >
+              <div className="flex items-center gap-2">
+                { isLoggedIn
+                    ? <>
+                      <LogOut className="h-4 w-4" />
+                       Logout
+                    </>
+                    : <>
+                      <LogIn className="h-4 w-4"/>
+                      Login
+                    </>
+                }
+              </div>
             </Link>
           </nav>
         </header>

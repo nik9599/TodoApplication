@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useContext } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/Components/ui/button"
@@ -17,11 +17,13 @@ import {
 import { Alert, AlertDescription } from "@/Components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { Form, Field } from "react-final-form"
+import {UserContext} from "@/Components/ContextualStore/UserContext";
 
 export default function Login() {
   const router = useRouter()
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const { setIsUserLogedIn} = useContext(UserContext)
 
   const onSubmit = async (values) => {
     setError("")
@@ -33,14 +35,15 @@ export default function Login() {
 
     setIsLoading(true)
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      router.push("/dashboard")
-    } catch (err) {
-      setError("Invalid email or password")
-    } finally {
-      setIsLoading(false)
-    }
+    // try {
+      // await new Promise((resolve) => setTimeout(resolve, 1000))
+      setIsUserLogedIn(true)
+      router.push("/")
+    // } catch (err) {
+    //   setError("Invalid email or password")
+    // } finally {
+    //   setIsLoading(false)
+    // }
   }
 
   return (
