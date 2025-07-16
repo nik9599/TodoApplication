@@ -1,5 +1,4 @@
 import http from 'http';
-import fs from 'fs';
 import ExcelJS from'exceljs';
 const workbook = new ExcelJS.Workbook();
 const worksheet = workbook.addWorksheet('Log Data');
@@ -13,12 +12,10 @@ worksheet.columns = [
 ];
 
 const myServer = http.createServer((req, res) => {
-    // const log = `${Date.now()} ${req.url}`;
+
     const logData =   [{ timestamp: new Date(), level: 'INFO', message: 'User logged in data', source: 'AuthService', req_url: req.url }];
     worksheet.addRows(logData);
-    // fs.appendFile('./serverLogs.exe', log,(err,data)=>{
-    //     res.end('Hello World!');
-    // })
+
     workbook.xlsx.writeFile('logs.xlsx')
         .then(() => {
             console.log('Excel file created successfully!');
