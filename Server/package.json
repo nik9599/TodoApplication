@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start" : "npx tsc && nodemon build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,9 +11,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "exceljs": "^4.4.0",
-    "express": "^5.1.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.14",
     "nodemon": "^3.1.10",
-    "url": "^0.11.4"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }
