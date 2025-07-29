@@ -8,18 +8,15 @@ dotenv.config();
 class UserService {
 
     protected UserRepository: UserRepository;
-
     private jwtSecret: string = process.env.JWT_SECRET || "";
 
     private isUserTableExists: boolean = false;
 
     constructor() {
         this.UserRepository = new UserRepository();
+        this.checkIfTableExists();
     }
 
-    async init() {
-        await this.checkIfTableExists();
-    }
 
     async generateToken(id: string): Promise<string> {
         if (!this.jwtSecret) throw new Error("JWT_SECRET is not defined");
@@ -27,13 +24,18 @@ class UserService {
     }
 
     async checkIfTableExists() {
+        try{
         const result = await this.UserRepository.checkIfTableExists();
-        console.log("table exists", result);
         if (result.length > 0) {
             this.isUserTableExists = true;
         }
         else {
             this.isUserTableExists = false;
+        }
+        }
+        catch(error){
+            await this.createTable()
+            this.checkIfTableExists()
         }
     }
 
@@ -49,31 +51,42 @@ class UserService {
 
     // login user
     async loginUser(req: any, res: any) {
-        const result = await this.UserRepository.getUserByEmail(req.body.email);
-        const isPasswordValid = await this.comparePassword(req.body.password, result.password);
-        if (result?.id) {
-            if (isPasswordValid) {
-                res.status(200).json({ message: "Login successful", data: result, token: await this.generateToken(result.id) });
+        try {
+            const result = await this.UserRepository.getUserByEmail(req.body.email);
+            if (!result?.id) {
+                return res.status(401).json({ message: "Invalid email or password", data: null });
             }
+            console.log("result",result);
+            const isPasswordValid = await this.comparePassword(req.body.password, result.password);
+            console.log("isPasswordValid",isPasswordValid);
+            if (isPasswordValid) {
+                const token =  await this.generateToken(result.id);
+                return res.status(200).json({ message: "Login successful", data: result, token: token });
+            }
+            
+            return res.status(401).json({ message: "Invalid email or password", data: null });
+        } catch (error) {
+            return res.status(500).json({ message: "Server error", data: error });
         }
-        res.status(401).json({ message: "Invalid email or password", data: null });
     }
     // signup user
     async signUpUser(req: any, res: any) {
-        if (!this.isUserTableExists) {
-            await this.createTable();
+        try {
+            if (!this.isUserTableExists) {
+                await this.createTable();
+            }
+            const { username, email, password } = req.body;
+            const allUserData = await this.UserRepository.getAllUsers();
+            const id = String(allUserData.length + 1);
+            const hashedPassword = await this.userHasPasswordAuthenticated(password);
+            const result = await this.UserRepository.createUser(username, email, hashedPassword, id);
+            if (result) {
+                return res.status(200).json({ message: "Signup successful" });
+            }
+            return res.status(401).json({ message: "Signup failed" });
+        } catch (error) {
+            return res.status(500).json({ message: "Server error" });
         }
-        const { username, email, password } = req.body;
-        const allUserData = await this.UserRepository.getAllUsers();
-        const id = String(allUserData.length + 1);
-        const hashedPassword = await this.userHasPasswordAuthenticated(password);
-        const result = await this.UserRepository.createUser(username, email, hashedPassword, id);
-        if (result) {
-            res.status(200).json({ message: "Signup successful" });
-        }
-        res.status(401).json({ message: "Signup failed" });
-
-
     }
 
     // check if user is unique
@@ -110,29 +123,37 @@ class UserService {
 
     // update user
     async updateUser(req: any, res: any) {
-        const { id, userName, email, password } = req.body;
-        console.log("id",id);
-        console.log("userName",userName);
-        console.log("email",email);
-        console.log("password",password);
-        const result = await this.UserRepository.updateUser(id, userName, email, password);
-        if (result) {
-            res.status(200).json({ message: "User updated successfully" });
-        }
-        else {
-            res.status(401).json({ message: "User update failed" });
+        try {
+            const { id, userName, email, password } = req.body;
+            console.log("id",id);
+            console.log("userName",userName);
+            console.log("email",email);
+            console.log("password",password);
+            const result = await this.UserRepository.updateUser(id, userName, email, password);
+            if (result) {
+                return res.status(200).json({ message: "User updated successfully" });
+            }
+            else {
+                return res.status(401).json({ message: "User update failed" });
+            }
+        } catch (error) {
+            return res.status(500).json({ message: "Server error" });
         }
     }
 
     // delete user
     async deleteUser(req: any, res: any) {
-        const { id } = req.body;
-        const result = await this.UserRepository.deleteUser(id);
-        if (result) {
-            res.status(200).json({ message: "User deleted successfully" });
-        }
-        else {
-            res.status(401).json({ message: "User delete failed" });
+        try {
+            const { id } = req.body;
+            const result = await this.UserRepository.deleteUser(id);
+            if (result) {
+                return res.status(200).json({ message: "User deleted successfully" });
+            }
+            else {
+                return res.status(401).json({ message: "User delete failed" });
+            }
+        } catch (error) {
+            return res.status(500).json({ message: "Server error" });
         }
     }
 
