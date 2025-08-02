@@ -39,6 +39,10 @@ class UserRepository {
         const result = await pool.query("UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4", [username, email, password, id]);
         return Number(result.rowCount) > 0 ? true : false;
     }
+    async getUserById(id:string) {
+        const result = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+        return result.rows[0];
+    }
 }
 
 export default UserRepository;

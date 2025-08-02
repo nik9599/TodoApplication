@@ -8,7 +8,7 @@ dotenv.config();
 class UserService {
 
     protected UserRepository: UserRepository;
-    private jwtSecret: string = process.env.JWT_SECRET || "";
+    private jwtSecret: string = "TodoApplication";
 
     private isUserTableExists: boolean = false;
 
@@ -163,7 +163,7 @@ class UserService {
         if (!token) {
             return res.status(401).json({ message: "Unauthorized" });
         }
-        const decoded = jwt.verify(token, this.jwtSecret);
+        const decoded = jwt.verify(token, "TodoApplication");
         req.user = decoded;
         next();
     }
@@ -184,6 +184,13 @@ class UserService {
    async comparePassword(password: string, hashedPassword: string) {
         const isPasswordValid = await bcrypt.compare(password, hashedPassword);
         return isPasswordValid;
+    }
+    async isUserExists(userId: string) {
+        const result = await this.UserRepository.getUserById(userId);
+        if(result){
+            return true;
+        }
+        return false;
     }
 }
 

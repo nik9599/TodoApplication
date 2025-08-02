@@ -1,5 +1,5 @@
-import pool from "../../Databases/pgDB";
-import { Task } from "../TaskInterface/TaskInterface";
+import pool from "../../Databases/pgDB.js";
+import { Task } from "../TaskInterface/TaskInterface.js";
 
 class TaskRepository {
   async checkIfTableExists() {
@@ -44,22 +44,26 @@ class TaskRepository {
   }
   async updateTask(task: Task) {
     const result = await pool.query(
-      "UPDATE task SET id = $1, title = $2, description = $3, completed = $4, updatedAt = $5, priority = $6, userId = $7 WHERE id = $1",
+      "UPDATE tasks SET title = $1, description = $2, completed = $3, updatedAt = $4, priority = $5, userId = $6 WHERE id = $7 RETURNING *",
       [
-        task.id,
         task.title,
         task.description,
         task.completed,
         task.updatedAt,
         task.priority,
         task.userId,
+        task.id
       ]
     );
     return result.rows;
   }
   async deleteTask(id: string) {
-    const result = await pool.query("DELETE FROM task WHERE id = $1", [id]);
+    const result = await pool.query("DELETE FROM tasks WHERE id = $1", [id]);
     return result.rows;
+  }
+  async getTaskById(id: string) {
+    const result = await pool.query("SELECT * FROM tasks WHERE id = $1", [id]);
+    return result.rows[0];
   }
 }
 
