@@ -1,9 +1,11 @@
 import express from 'express';
 import routes from "./Routes/routes.js";
-// import {PGDB} from "./Databases/pgDB.js";
+import cors from 'cors'
 
 const app = express();
 // new PGDB()
+
+app.use(cors())
 
 app.use('/', routes);
 app.use(express.json());

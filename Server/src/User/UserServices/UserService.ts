@@ -64,7 +64,7 @@ class UserService {
                 return res.status(200).json({ message: "Login successful", data: result, token: token });
             }
             
-            return res.status(401).json({ message: "Invalid email or password", data: null });
+            return res.status(200).json({ message: "Invalid email or password", data: null });
         } catch (error) {
             return res.status(500).json({ message: "Server error", data: error });
         }

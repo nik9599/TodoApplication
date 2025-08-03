@@ -18,16 +18,21 @@ import { Alert, AlertDescription } from "@/Components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { Form, Field } from "react-final-form"
 import {UserContext} from "@/Components/ContextualStore/UserContext";
+import { useDispatch, useSelector } from 'react-redux'
+import { loginUsers } from '../reducer/login.reducer'
 
 export default function Login() {
   const router = useRouter()
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const { setIsUserLogedIn} = useContext(UserContext)
+  const dispatch = useDispatch()
+  const loginState = useSelector((state) => state.login)
+  const { data, loading, error: loginError, loginSuccess, isLoginError } = loginState
 
   const onSubmit = async (values) => {
     setError("")
-
+    console.log("values",values)
     if (!values.email || !values.password) {
       setError("Email and password are required")
       return
@@ -35,15 +40,19 @@ export default function Login() {
 
     setIsLoading(true)
 
-    // try {
-      // await new Promise((resolve) => setTimeout(resolve, 1000))
-      setIsUserLogedIn(true)
-      router.push("/")
-    // } catch (err) {
-    //   setError("Invalid email or password")
-    // } finally {
-    //   setIsLoading(false)
-    // }
+    try {
+      dispatch(loginUsers(values))
+      if(loginSuccess){
+        setIsUserLogedIn(true)
+        router.push("/")
+      }else{
+        setError("Something went wrong")
+      }
+    } catch (err) {
+      setError("Invalid email or password")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -58,10 +67,10 @@ export default function Login() {
                       <CardDescription className="text-center">Log in to your todo account</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {error && (
+                      { isLoginError && (
                           <Alert variant="destructive" className="mb-4">
                             <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>{error}</AlertDescription>
+                            <AlertDescription>{loginError}</AlertDescription>
                           </Alert>
                       )}
 
@@ -75,7 +84,8 @@ export default function Login() {
                                     id="email"
                                     type="email"
                                     placeholder="john@example.com"
-                                    disabled={isLoading}
+                                    disabled={isLoading || loading}
+                                    isError={isLoginError}
                                     required
                                 />
                             )}
@@ -95,8 +105,9 @@ export default function Login() {
                                     {...input}
                                     id="password"
                                     type="password"
-                                    disabled={isLoading}
+                                    disabled={isLoading || loading}
                                     required
+                                    isError={isLoginError}                                    
                                 />
                             )}
                           </Field>
@@ -123,8 +134,8 @@ export default function Login() {
                           </Field>
                         </div>
 
-                        <Button type="submit" className="w-full" disabled={isLoading}>
-                          {isLoading ? "Logging in..." : "Log In"}
+                          <Button type="submit" className="w-full" disabled={isLoading || loading}>
+                          {isLoading || loading ? "Logging in..." : "Log In"}
                         </Button>
                       </div>
                     </CardContent>

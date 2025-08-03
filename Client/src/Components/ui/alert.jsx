@@ -11,7 +11,7 @@ const baseAlertClasses =
 const variantClassMap = {
   default: "bg-background text-foreground",
   destructive:
-    "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+  "border-red-500 bg-red-100 text-red-700 dark:border-red-500 dark:bg-red-950 dark:text-red-400 [&>svg]:text-red-700 dark:[&>svg]:text-red-400",
   success:
     "border-green-500/50 text-green-700 bg-green-50 dark:border-green-500 dark:bg-green-950 dark:text-green-400 [&>svg]:text-green-600 dark:[&>svg]:text-green-400",
   warning:
