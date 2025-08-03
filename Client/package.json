@@ -20,6 +20,7 @@
     "react-dom": "^19.0.0",
     "react-final-form": "^7.0.0",
     "react-redux": "^9.2.0",
+    "react-router-dom": "^7.7.1",
     "server-only": "^0.0.1"
   },
   "devDependencies": {

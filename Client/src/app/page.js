@@ -7,13 +7,13 @@ import { redirect } from 'next/navigation'
 export default function Home() {
   const { isUserLogedIn} = useContext(UserContext)
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("token") || true; // Or use your auth method
-    if (!isUserLogedIn) {
+    console.log("isUserLogedIn",isUserLogedIn)
+    if (!Boolean(isUserLogedIn)) {
       redirect("/WelcomeUser");
     } else {
       redirect("/Dashboard"); // Optional: where to go if logged in
     }
-  }, []);
+  }, [isUserLogedIn]);
 
   return null; // Optionally show a loading state here
 }

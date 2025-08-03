@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, AlertCircle } from "lucide-react"
 import { Form, Field } from "react-final-form"
+import { useDispatch, useSelector } from "react-redux"
+import { signupUsers } from "../reducer/login.reducer"
 // import NavBar from "@/Components/Navbar"
 
 export default function SignUp() {
@@ -17,6 +19,9 @@ export default function SignUp() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch()
+  const signupState = useSelector((state) => state.login)
+  const { data, loading, error: signupError, signupSuccess, isSignupError } = signupState
 
   const onSubmit = async (values) => {
     setError("")
@@ -39,14 +44,16 @@ export default function SignUp() {
     setIsLoading(true)
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      setSuccess(true)
-      setTimeout(() => {
-        router.push("/login")
-      }, 1500)
+      dispatch(signupUsers(values))
+      if(signupSuccess){
+        setSuccess(true)
+        setIsLoading(false)
+        setTimeout(() => {
+          router.push("/Auth/Login")
+        }, 1500)
+      }
     } catch (err) {
-      setError("An error occurred during signup")
-    } finally {
+      setError(signupError)
       setIsLoading(false)
     }
   }
@@ -64,7 +71,7 @@ export default function SignUp() {
             </CardHeader>
 
             <CardContent>
-              {error && (
+              { isSignupError || error && (
                   <Alert variant="destructive" className="mb-4">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>{error}</AlertDescription>
@@ -106,7 +113,7 @@ export default function SignUp() {
                                     id="email"
                                     type="email"
                                     placeholder="john@example.com"
-                                    disabled={isLoading || success}
+                                    disabled={isLoading || success || loading}
                                     required
                                 />
                             )}
@@ -121,7 +128,7 @@ export default function SignUp() {
                                     {...input}
                                     id="password"
                                     type="password"
-                                    disabled={isLoading || success}
+                                    disabled={isLoading || success || loading}
                                     required
                                 />
                             )}
@@ -136,15 +143,15 @@ export default function SignUp() {
                                     {...input}
                                     id="confirmPassword"
                                     type="password"
-                                    disabled={isLoading || success}
+                                    disabled={isLoading || success || loading}
                                     required
                                 />
                             )}
                           </Field>
                         </div>
 
-                        <Button type="submit" className="w-full" disabled={isLoading || success}>
-                          {isLoading ? "Creating Account..." : "Sign Up"}
+                          <Button type="submit" className="w-full" disabled={isLoading || success || loading}>
+                          {isLoading || loading ? "Creating Account..." : "Sign Up"}
                         </Button>
                       </form>
                   )}

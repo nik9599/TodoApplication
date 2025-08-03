@@ -6,14 +6,23 @@ import { useRouter } from "next/navigation"
 import { CheckCircle, LogOut, Search, User, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import {UserContext} from "@/Components/ContextualStore/UserContext";
+import { logoutUsers } from "@/app/Auth/reducer/login.reducer";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function NavBar() {
   const router = useRouter()
-  const { isUserLogedIn } = useContext(UserContext)
+  const { isUserLogedIn, setIsUserLogedIn } = useContext(UserContext)
   const isLoggedIn = isUserLogedIn;
+  const dispatch = useDispatch()
+  const logoutState = useSelector((state) => state.login)
+  const { data, loading, error: logoutError, logoutSuccess, isLogoutError } = logoutState
   
   const handleLogout = () => {
-    router.push("/Auth/SignUp")
+    dispatch(logoutUsers())
+    if(logoutSuccess){
+      setIsUserLogedIn(false)
+      router.push("/")  
+    }
   }
 
   const handleLogin = () => {
@@ -35,9 +44,11 @@ export default function NavBar() {
                   variant="outline"
                   onClick={handleLogout}
                   className="flex items-center gap-2"
+                  disabled={loading}
+                  loading={loading}
                 >
                   <LogOut className="h-4 w-4" />
-                  Logout
+                  {loading ? "Logging out..." : "Logout"}
                 </Button>
               </div>
             </div>

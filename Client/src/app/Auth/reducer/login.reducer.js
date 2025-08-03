@@ -5,6 +5,7 @@ import { REQUEST, SUCCESS, FAILURE } from '@/Components/action-type-utils';
 export const ACTION_TYPE = {
   LOGIN_REQUEST: 'LOGIN_REQUEST',
   SIGNUP_REQUEST: 'SIGNUP_REQUEST',
+  LOGOUT_REQUEST: 'LOGOUT_REQUEST',
 }
 
 // reducer.js
@@ -16,12 +17,15 @@ const initialState = {
   signupSuccess: false,
   isSignupError: false,
   isLoginError: false,
+  logoutSuccess: false,
+  isLogoutError: false,
 };
 
 export const loginReducer = (state = initialState, action) => {
   switch (action.type) {
     case REQUEST(ACTION_TYPE.LOGIN_REQUEST):
     case REQUEST(ACTION_TYPE.SIGNUP_REQUEST):
+    case REQUEST(ACTION_TYPE.LOGOUT_REQUEST):
       return {
         ...state,
         loading: true,
@@ -30,9 +34,12 @@ export const loginReducer = (state = initialState, action) => {
         isSignupError: false,
         loginSuccess: false,
         isLoginError: false,
+        logoutSuccess: false,
+        isLogoutError: false,
       };
     case FAILURE(ACTION_TYPE.LOGIN_REQUEST):
     case FAILURE(ACTION_TYPE.SIGNUP_REQUEST):
+    case FAILURE(ACTION_TYPE.LOGOUT_REQUEST):
       return {
         ...state,
         loading: false,
@@ -40,6 +47,10 @@ export const loginReducer = (state = initialState, action) => {
         loginSuccess: false,
         isLoginError: true,
         isSignupError: true,
+        logoutSuccess: false,
+        isLogoutError: true,
+        logoutSuccess: false,
+        isLogoutError: true,
       };
     case SUCCESS(ACTION_TYPE.LOGIN_REQUEST):
       return {
@@ -56,6 +67,14 @@ export const loginReducer = (state = initialState, action) => {
         data: action.payload,
         signupSuccess: true,
         isSignupError: false,
+      };
+    case SUCCESS(ACTION_TYPE.LOGOUT_REQUEST):
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+        logoutSuccess: true,
+        isLogoutError: false,
       };
     default:
       return state;
@@ -88,5 +107,14 @@ export const signupUsers = createAsyncThunk(ACTION_TYPE.SIGNUP_REQUEST, async (v
     } else {
       return rejectWithValue({ message: error.message });
     }
+  }
+});
+
+export const logoutUsers = createAsyncThunk(ACTION_TYPE.LOGOUT_REQUEST, async (values, { rejectWithValue }) => {
+  try {
+    const response = await axios.get('http://localhost:8000/user/logout');
+    return response.data; // ✅ success response
+  } catch (error) {
+    return rejectWithValue({ message: error.message });
   }
 });

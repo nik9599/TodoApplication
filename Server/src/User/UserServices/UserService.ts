@@ -56,12 +56,18 @@ class UserService {
             if (!result?.id) {
                 return res.status(401).json({ message: "Invalid email or password", data: null });
             }
-            console.log("result",result);
             const isPasswordValid = await this.comparePassword(req.body.password, result.password);
-            console.log("isPasswordValid",isPasswordValid);
             if (isPasswordValid) {
                 const token =  await this.generateToken(result.id);
-                return res.status(200).json({ message: "Login successful", data: result, token: token });
+                return res
+                .cookie('token', token, {
+                  httpOnly: true,
+                  secure: process.env.NODE_ENV === 'production',
+                  sameSite: 'strict',
+                  maxAge: 24 * 60 * 60 * 1000, // 1 day
+                })
+                .status(200)
+                .json({ message: "Login successful", data: result });
             }
             
             return res.status(200).json({ message: "Invalid email or password", data: null });
@@ -69,6 +75,11 @@ class UserService {
             return res.status(500).json({ message: "Server error", data: error });
         }
     }
+
+    async logoutUser(req: any, res: any) {
+        return res.clearCookie('token').status(200).json({ message: "Logout successful" });
+    }
+
     // signup user
     async signUpUser(req: any, res: any) {
         try {
