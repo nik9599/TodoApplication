@@ -15,38 +15,46 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { TaskList } from "@/components/task/taskList"
 import { TaskForm } from "@/components/task/taskForm"
 import { Plus, LogOut, Search, User } from "lucide-react"
+import { useDispatch, useSelector } from "react-redux"
+import { getTasks } from "@/app/TaskReducer/TaskReducer.reducer"
 
 export default function Dashboard() {
+  const dispatch = useDispatch()
+  const { data, isLoading, error, getTasksSuccess } = useSelector((state) => state.task)
 
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: "Complete project proposal",
-      description: "Finish the Q4 project proposal and send it to the team for review",
-      completed: false,
-      priority: "high",
-      dueDate: "2024-12-15",
-      createdAt: "2024-12-01",
-    },
-    {
-      id: 2,
-      title: "Schedule team meeting",
-      description: "Set up a meeting with the development team to discuss the new features",
-      completed: true,
-      priority: "medium",
-      dueDate: "2024-12-10",
-      createdAt: "2024-11-28",
-    },
-    {
-      id: 3,
-      title: "Research new technologies",
-      description: "Look into React 19 features and Next.js 15 updates",
-      completed: false,
-      priority: "low",
-      dueDate: "2024-12-20",
-      createdAt: "2024-12-02",
-    },
-  ])
+  useEffect(() => {
+    dispatch(getTasks())
+  }, [])
+
+  // const [tasks, setTasks] = useState([
+  //   {
+  //     id: 1,
+  //     title: "Complete project proposal",
+  //     description: "Finish the Q4 project proposal and send it to the team for review",
+  //     completed: false,
+  //     priority: "high",
+  //     dueDate: "2024-12-15",
+  //     createdAt: "2024-12-01",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Schedule team meeting",
+  //     description: "Set up a meeting with the development team to discuss the new features",
+  //     completed: true,
+  //     priority: "medium",
+  //     dueDate: "2024-12-10",
+  //     createdAt: "2024-11-28",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Research new technologies",
+  //     description: "Look into React 19 features and Next.js 15 updates",
+  //     completed: false,
+  //     priority: "low",
+  //     dueDate: "2024-12-20",
+  //     createdAt: "2024-12-02",
+  //   },
+  // ])
 
   const [filteredTasks, setFilteredTasks] = useState(tasks)
   const [searchQuery, setSearchQuery] = useState("")
@@ -125,7 +133,7 @@ export default function Dashboard() {
 
 
   const taskStats = {
-    total: tasks.length,
+    // total: tasks.length,
     completed: tasks.filter((t) => t.completed).length,
     active: tasks.filter((t) => !t.completed).length,
     overdue: tasks.filter(
