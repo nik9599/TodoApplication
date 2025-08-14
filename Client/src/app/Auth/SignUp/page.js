@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -22,11 +22,11 @@ export default function SignUp() {
   const dispatch = useDispatch()
   const signupState = useSelector((state) => state.login)
   const { data, loading, error: signupError, signupSuccess, isSignupError } = signupState
-
+ const submitButton = useRef()
   const onSubmit = async (values) => {
     setError("")
 
-    if (!values.name || !values.email || !values.password) {
+    if (!values.username || !values.email || !values.password || !values.confirmPassword) {
       setError("All fields are required")
       return
     }
@@ -87,15 +87,17 @@ export default function SignUp() {
 
               <Form
                   onSubmit={onSubmit}
-                  render={({ handleSubmit }) => (
+                  render={({ handleSubmit, values }) => {
+                    submitButton.current = handleSubmit
+                    return (  
                       <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="name">Full Name</Label>
-                          <Field name="name">
+                          <Label htmlFor="username">Full Name</Label>
+                          <Field name="username">
                             {({ input }) => (
                                 <Input
                                     {...input}
-                                    id="name"
+                                    id="username"
                                     placeholder="John Doe"
                                     disabled={isLoading || success}
                                     required
@@ -150,11 +152,13 @@ export default function SignUp() {
                           </Field>
                         </div>
 
-                          <Button type="submit" className="w-full" disabled={isLoading || success || loading}>
-                          {isLoading || loading ? "Creating Account..." : "Sign Up"}
-                        </Button>
+                          <Button type="submit" onClick={() => submitButton.current()} className="w-full">
+                            {isLoading || loading ? "Creating Account..." : "Sign Up"}
+                          </Button>
+                          
+
                       </form>
-                  )}
+                  )}}
               />
             </CardContent>
 
