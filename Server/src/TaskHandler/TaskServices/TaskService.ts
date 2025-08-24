@@ -64,16 +64,26 @@ class TaskServices {
 
   async getTaskByUserId(req: any, res: any) {
     try {
-      const { userId } = req.body;
+      // For GET requests, userId comes from query parameters, not body
+      const { userId } = req.query;
+      console.log("🔍 Getting tasks for userId:", userId);
+      
+      if (!userId) {
+        return res.status(400).json({ message: "userId is required", isError: true, data: [] });
+      }
+      
       const result = await this.TaskRepository.getTaskByUserId(userId);
       if (result?.length > 0) {
+        console.log("✅ Found", result.length, "tasks for user", userId);
         return res.status(200).json({ message: "Task fetched successfully", data: result });
       }
       else {
-        return res.status(400).json({ message: "No task found", isError: false, data: [] });
+        console.log("📭 No tasks found for user", userId);
+        return res.status(200).json({ message: "No task found", isError: false, data: [] });
       }
     }
     catch (error) {
+      console.log("💥 Error fetching tasks:", error);
       return res.status(400).json({ message: "Task fetching failed", isError: true, data: [] });
     }
   }

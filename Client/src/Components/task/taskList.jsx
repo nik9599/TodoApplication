@@ -6,12 +6,12 @@ import { EmptyState } from "./emptyState";
 
 // Task type definition (should match task-item)
 export function TaskList({ tasks, onToggleComplete, onEdit, onDelete, onCreateTask }) {
-  if (tasks.length === 0) {
+  if (tasks?.length === 0) {
     return <EmptyState onCreateTask={onCreateTask} />
   }
 
-  const completedTasks = tasks.filter((task) => task.completed)
-  const incompleteTasks = tasks.filter((task) => !task.completed)
+  const completedTasks = tasks?.filter((task) => task.completed)
+  const incompleteTasks = tasks?.filter((task) => !task.completed)
 
   return (
     <div className="space-y-6">

@@ -25,14 +25,13 @@ export default function Login() {
   const router = useRouter()
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const { setIsUserLogedIn} = useContext(UserContext)
+  const { handleLogin } = useContext(UserContext)
   const dispatch = useDispatch()
   const loginState = useSelector((state) => state.login)
   const { data, loading, error: loginError, loginSuccess, isLoginError } = loginState
 
   const onSubmit = async (values) => {
     setError("")
-    console.log("values",values)
     if (!values.email || !values.password) {
       setError("Email and password are required")
       return
@@ -41,15 +40,18 @@ export default function Login() {
     setIsLoading(true)
 
     try {
-      dispatch(loginUsers(values))
-      if(loginSuccess){
-        setIsUserLogedIn(true)
-        router.push("/")
-      }else{
-        setError("Something went wrong")
+      // Dispatch login action
+      const result = await dispatch(loginUsers(values)).unwrap()
+      
+      if (result && result.data) {
+        // Login successful
+        handleLogin(result.data) // Use the new handleLogin function
+        router.push("/Dashboard")
+      } else {
+        setError("Login failed - no data received")
       }
     } catch (err) {
-      setError("Invalid email or password")
+      setError(err.message || "Invalid email or password")
     } finally {
       setIsLoading(false)
     }

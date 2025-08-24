@@ -28,7 +28,7 @@ class UserRepository {
             "INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
             [id, username, email, password]
         );
-        return Number(result.rowCount) > 0 ? true : false;
+        return Number(result.rowCount) > 0 ? result.rows[0] : null;
     }
 
     async deleteUser(id:string) {

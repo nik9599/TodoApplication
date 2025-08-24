@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import apiClient from '@/Components/api/axiosConfig';
 import { REQUEST, SUCCESS, FAILURE } from '@/Components/action-type-utils';
 
 export const ACTION_TYPE = {
@@ -84,7 +84,7 @@ export const loginReducer = (state = initialState, action) => {
 
 export const loginUsers = createAsyncThunk(ACTION_TYPE.LOGIN_REQUEST, async (values, { rejectWithValue }) => {
   try {
-    const response = await axios.post('http://localhost:8000/user/login', values);
+    const response = await apiClient.post('/user/login', values);
     return response.data; // ✅ success response
   } catch (error) {
     // ✅ Handle error response from server
@@ -98,7 +98,7 @@ export const loginUsers = createAsyncThunk(ACTION_TYPE.LOGIN_REQUEST, async (val
 
 export const signupUsers = createAsyncThunk(ACTION_TYPE.SIGNUP_REQUEST, async (values, { rejectWithValue }) => {
   try {
-    const response = await axios.post('http://localhost:8000/user/signup', values);
+    const response = await apiClient.post('/user/signup', values);
     return response.data; // ✅ success response
   } catch (error) {
     // ✅ Handle error response from server
@@ -112,7 +112,7 @@ export const signupUsers = createAsyncThunk(ACTION_TYPE.SIGNUP_REQUEST, async (v
 
 export const logoutUsers = createAsyncThunk(ACTION_TYPE.LOGOUT_REQUEST, async (values, { rejectWithValue }) => {
   try {
-    const response = await axios.get('http://localhost:8000/user/logout');
+    const response = await apiClient.get('/user/logout');
     return response.data; // ✅ success response
   } catch (error) {
     return rejectWithValue({ message: error.message });

@@ -2,18 +2,33 @@
 
 import { useEffect, useContext } from "react";
 import {UserContext} from "@/Components/ContextualStore/UserContext";
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
-  const { isUserLogedIn} = useContext(UserContext)
+  const { isUserLogedIn, isLoading } = useContext(UserContext)
+  const router = useRouter()
+  
   useEffect(() => {
-    console.log("isUserLogedIn",isUserLogedIn)
-    if (!Boolean(isUserLogedIn)) {
-      redirect("/WelcomeUser");
-    } else {
-      redirect("/Dashboard"); // Optional: where to go if logged in
+    // Don't redirect while loading
+    if (isLoading) {
+      return
     }
-  }, [isUserLogedIn]);
+    
+    if (!Boolean(isUserLogedIn)) {
+      router.push("/WelcomeUser");
+    } else {
+      router.push("/Dashboard");
+    }
+  }, [isUserLogedIn, isLoading, router]);
 
-  return null; // Optionally show a loading state here
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  return null; // Will redirect, so don't render anything
 }

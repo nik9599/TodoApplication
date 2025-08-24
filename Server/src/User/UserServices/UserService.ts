@@ -8,7 +8,7 @@ dotenv.config();
 class UserService {
 
     protected UserRepository: UserRepository;
-    private jwtSecret: string = "TodoApplication";
+    private jwtSecret: string = "TodoApplication"; // Simple development secret
 
     private isUserTableExists: boolean = false;
 
@@ -59,15 +59,23 @@ class UserService {
             const isPasswordValid = await this.comparePassword(req.body.password, result.password);
             if (isPasswordValid) {
                 const token =  await this.generateToken(result.id);
+                
+                // Return only essential user data
+                const userData = {
+                    id: result.id,
+                    username: result.username,
+                    email: result.email
+                };
+                
                 return res
                 .cookie('token', token, {
                   httpOnly: true,
-                  secure: process.env.NODE_ENV === 'production',
-                  sameSite: 'strict',
+                  secure: false, // false for development (HTTP)
+                  sameSite: 'lax', // more permissive for development
                   maxAge: 24 * 60 * 60 * 1000, // 1 day
                 })
                 .status(200)
-                .json({ message: "Login successful", data: result });
+                .json({ message: "Login successful", data: userData });
             }
             
             return res.status(200).json({ message: "Invalid email or password", data: null });
@@ -78,6 +86,39 @@ class UserService {
 
     async logoutUser(req: any, res: any) {
         return res.clearCookie('token').status(200).json({ message: "Logout successful" });
+    }
+
+    // verify token endpoint
+    async verifyToken(req: any, res: any) {
+        try {
+            // If we reach here, the token is valid (userAuthenticated middleware passed)
+            // Get user data from database
+            const userData = await this.UserRepository.getUserById(req.user.id);
+            
+            if (userData) {
+                // Return only essential user data
+                const userInfo = {
+                    id: userData.id,
+                    username: userData.username,
+                    email: userData.email
+                };
+                
+                return res.status(200).json({ 
+                    message: "Token is valid", 
+                    data: { 
+                        authenticated: true,
+                        user: userInfo
+                    } 
+                });
+            } else {
+                return res.status(401).json({ 
+                    message: "User not found", 
+                    data: { authenticated: false } 
+                });
+            }
+        } catch (error) {
+            return res.status(500).json({ message: "Server error", data: error });
+        }
     }
 
     // signup user
@@ -92,7 +133,16 @@ class UserService {
             const hashedPassword = await this.userHasPasswordAuthenticated(password);
             const result = await this.UserRepository.createUser(username, email, hashedPassword, id);
             if (result) {
-                return res.status(200).json({ message: "Signup successful" });
+                // Return only essential user data
+                const userData = {
+                    id: result.id,
+                    username: result.username,
+                    email: result.email
+                };
+                return res.status(200).json({ 
+                    message: "Signup successful", 
+                    data: userData 
+                });
             }
             return res.status(401).json({ message: "Signup failed" });
         } catch (error) {
@@ -170,13 +220,33 @@ class UserService {
 
     // check if user is authenticated
     userAuthenticated(req: any, res: any, next: any) {
-        const token = req.headers.authorization?.split(" ")[1];
+        console.log("🔐 Auth middleware - Headers:", req.headers);
+        console.log("🍪 Auth middleware - Cookies:", req.cookies);
+        
+        // First try to get token from Authorization header
+        let token = req.headers.authorization?.split(" ")[1];
+        console.log("📋 Token from header:", token);
+        
+        // If no token in header, try to get from cookies
         if (!token) {
-            return res.status(401).json({ message: "Unauthorized" });
+            token = req.cookies?.token;
+            console.log("🍪 Token from cookies:", token);
         }
-        const decoded = jwt.verify(token, "TodoApplication");
-        req.user = decoded;
-        next();
+        
+        if (!token) {
+            console.log("❌ No token found anywhere");
+            return res.status(401).json({ message: "Unauthorized - No token found" });
+        }
+        
+        try {
+            const decoded = jwt.verify(token,  "TodoApplication");
+            console.log("✅ Token verified, user:", decoded);
+            req.user = decoded;
+            next();
+        } catch (error) {
+            console.log("💥 Token verification failed:", error);
+            return res.status(401).json({ message: "Unauthorized - Invalid token" });
+        }
     }
 
     // check if email is valid

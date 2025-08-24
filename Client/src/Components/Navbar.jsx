@@ -11,17 +11,21 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function NavBar() {
   const router = useRouter()
-  const { isUserLogedIn, setIsUserLogedIn } = useContext(UserContext)
+  const { isUserLogedIn, handleLogout: contextHandleLogout } = useContext(UserContext)
   const isLoggedIn = isUserLogedIn;
   const dispatch = useDispatch()
   const logoutState = useSelector((state) => state.login)
   const { data, loading, error: logoutError, logoutSuccess, isLogoutError } = logoutState
   
-  const handleLogout = () => {
-    dispatch(logoutUsers())
-    if(logoutSuccess){
-      setIsUserLogedIn(false)
-      router.push("/")  
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUsers())
+      if(logoutSuccess){
+        contextHandleLogout() // Use the context's handleLogout
+        router.push("/")  
+      }
+    } catch (error) {
+      // Handle logout error silently
     }
   }
 

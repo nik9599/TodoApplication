@@ -40,7 +40,7 @@ class TaskRepository {
 
   async getAllTaskLength() {
     const result = await pool.query("SELECT * FROM tasks");
-    return result.rows?.length;
+    return result.rows?.length + 1;
   }
   async updateTask(task: Task) {
     const result = await pool.query(
