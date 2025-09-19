@@ -5,6 +5,8 @@ const userRouter = express.Router();
 
 userRouter.use(express.json());
 
+// Note: Logging is handled by the main routes middleware to avoid duplicates
+
 const userServices = new UserService()
 userRouter?.post('/login', (req,res)=> userServices?.loginUser(req,res))
 userRouter?.post('/signup', (req, res, next) => userServices.isUserUnique(req, res, next)  , (req,res)=> {userServices?.signUpUser(req,res)})

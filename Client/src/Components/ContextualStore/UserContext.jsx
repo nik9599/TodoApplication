@@ -23,6 +23,7 @@ export const UserProvider = ({children}) => {
     
     const [isLoading, setIsLoading] = useState(true);
     const authCheckRef = useRef(false); // Prevent multiple simultaneous auth checks
+    const lastAuthCheckRef = useRef(0); // Track last auth check timestamp
 
     // Check authentication status on app startup
     useEffect(() => {
@@ -33,7 +34,16 @@ export const UserProvider = ({children}) => {
         
         const checkAuthStatus = async () => {
             if (authCheckRef.current) return;
+            
+            // Prevent auth checks too frequently (within 5 seconds)
+            const now = Date.now();
+            if (now - lastAuthCheckRef.current < 5000) {
+                setIsLoading(false);
+                return;
+            }
+            
             authCheckRef.current = true;
+            lastAuthCheckRef.current = now;
             
             try {
                 const response = await apiClient.get('/user/verify-token');

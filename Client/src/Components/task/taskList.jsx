@@ -13,6 +13,14 @@ export function TaskList({ tasks, onToggleComplete, onEdit, onDelete, onCreateTa
   const completedTasks = tasks?.filter((task) => task.completed)
   const incompleteTasks = tasks?.filter((task) => !task.completed)
 
+  // Helper function to generate stable unique keys
+  const generateKey = (task, index, type) => {
+    if (task.id) return `${type}-${task.id}`;
+    if (task._id) return `${type}-${task._id}`;
+    if (task.title) return `${type}-${index}-${task.title.replace(/\s+/g, '-')}`;
+    return `${type}-${index}-task-${index}`;
+  };
+
   return (
     <div className="space-y-6">
       {incompleteTasks.length > 0 && (
@@ -21,9 +29,9 @@ export function TaskList({ tasks, onToggleComplete, onEdit, onDelete, onCreateTa
             Active Tasks ({incompleteTasks.length})
           </h2>
           <div className="space-y-2">
-            {incompleteTasks.map((task) => (
+            {incompleteTasks.map((task, index) => (
               <TaskItem
-                key={task.id}
+                key={generateKey(task, index, 'incomplete')}
                 task={task}
                 onToggleComplete={onToggleComplete}
                 onEdit={onEdit}
@@ -40,9 +48,9 @@ export function TaskList({ tasks, onToggleComplete, onEdit, onDelete, onCreateTa
             Completed Tasks ({completedTasks.length})
           </h2>
           <div className="space-y-2">
-            {completedTasks.map((task) => (
+            {completedTasks.map((task, index) => (
               <TaskItem
-                key={task.id}
+                key={generateKey(task, index, 'completed')}
                 task={task}
                 onToggleComplete={onToggleComplete}
                 onEdit={onEdit}

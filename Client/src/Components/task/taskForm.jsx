@@ -22,8 +22,9 @@ import {
 } from "@/components/ui/dialog"
 
 // Ensure this matches the structure used in task-item.jsx
-export function TaskForm({ task, onSave, onCancel }) {
+export function TaskForm({ task, onSave, onCancel, isEditTask }) {
   const initialValues = {
+    id: task?.id || "",
     title: task?.title || "",
     description: task?.description || "",
     priority: task?.priority || "medium",
@@ -32,14 +33,29 @@ export function TaskForm({ task, onSave, onCancel }) {
   }
 
   const onSubmit = (values) => {
-    if (!values.title.trim()) return
+    // if (!values.title.trim()) return
+    let formData = {}
+    console.log("da1 isEditTask",isEditTask)
+    console.log("da1 task",task)
+    console.log("da1 values",values)
+ if(isEditTask){
 
-    onSave({
+    formData = {
       ...values,
+      id: task?.id || "",
       title: values.title.trim(),
       description: values.description.trim(),
       dueDate: values.dueDate || undefined,
-    })
+    }
+    }else{
+      formData = {
+        ...values,
+        title: values.title.trim(),
+        description: values.description.trim(),
+        dueDate: values.dueDate || undefined,
+      }
+    }
+    onSave(formData)
   }
 
   return (

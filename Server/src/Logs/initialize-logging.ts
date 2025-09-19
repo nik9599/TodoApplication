@@ -1,27 +1,8 @@
-import express from 'express';
-import routes from "./Routes/routes.js";
-import cors from 'cors'
-import cookieParser from 'cookie-parser'
-import LogRepository from './Logs/LogServices/LogRepository.js';
+// Initialize logging system - can be imported in the main server file
+import LogService from "./LogServices/LogService.js";
+import LogRepository from "./LogServices/LogRepository.js";
 
-const app = express();
-
-// Configure CORS for development (localhost:3000)
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
-
-// Parse JSON bodies BEFORE routes
-app.use(express.json());
-
-// Parse cookies BEFORE routes
-app.use(cookieParser());
-
-app.use('/', routes);
-
-// Initialize logging system
-async function initializeLoggingSystem() {
+export async function initializeLoggingSystem() {
     console.log("🚀 Initializing comprehensive logging system...");
     
     try {
@@ -31,6 +12,10 @@ async function initializeLoggingSystem() {
         console.log("📋 Creating logging tables...");
         await logRepository.initializeTables();
         console.log("✅ Logging tables created successfully");
+        
+        // Test basic functionality
+        console.log("🧪 Testing logging functionality...");
+        const logService = new LogService();
         
         // Create a test log entry
         const testLog = {
@@ -70,24 +55,4 @@ async function initializeLoggingSystem() {
     }
 }
 
-// Initialize logging system and start server
-async function startServer() {
-    console.log('🚀 Starting server...');
-    
-    // Initialize logging system
-    const loggingInitialized = await initializeLoggingSystem();
-    if (!loggingInitialized) {
-        console.warn('⚠️  Logging system failed to initialize, but server will continue...');
-    }
-    
-    app.listen(8000, ()=>{
-        console.log('✅ Server started on port 8000');
-        console.log('📝 Comprehensive logging system is active');
-        console.log('🔍 Logs endpoint available at: /logs');
-    });
-}
-
-startServer().catch(error => {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
-});
+export default initializeLoggingSystem;

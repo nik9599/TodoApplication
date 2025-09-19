@@ -87,7 +87,6 @@ export const taskReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                data: action.payload,
                 deleteTaskSuccess: true,
                 isDeleteTaskError: false,
             }
@@ -133,7 +132,8 @@ export const updateTask = createAsyncThunk(ACTION_TYPE.UPDATE_TASK_REQUEST, asyn
 
  export const deleteTask = createAsyncThunk(ACTION_TYPE.DELETE_TASK_REQUEST, async (values, { rejectWithValue }) => {
     try {
-        const response = await apiClient.delete('/task/delete', values);
+        console.log("values",values)
+        const response = await apiClient.delete(`/task/delete/${values}`);
         return response.data;
     } catch (error) {
         return rejectWithValue({ message: error.message });

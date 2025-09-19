@@ -9,4 +9,5 @@ export interface Task{
     updatedAt: Date;
     priority: string;
     userId: string;
+    dueDate?: Date | null;
 }

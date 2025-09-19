@@ -16,13 +16,14 @@ import { TaskList } from "@/components/task/taskList"
 import { TaskForm } from "@/components/task/taskForm"
 import { Plus, LogOut, Search, User } from "lucide-react"
 import { useDispatch, useSelector } from "react-redux"
-import { createTask, getTasks } from "@/app/TaskReducer/TaskReducer.reducer"
-import { ProtectedRoute } from "@/Components/api/ProtectedRoute"
+import { createTask, deleteTask, getTasks, updateTask } from "@/app/TaskReducer/TaskReducer.reducer"
+// Removed ProtectedRoute import - using UserProvider for auth instead
 import { UserContext } from "@/Components/ContextualStore/UserContext"
+import LoaderWrapper from "@/Components/ui/LoaderWrapper"
 
 export default function Dashboard() {
   const dispatch = useDispatch()
-  const { data, isLoading, error, getTasksSuccess, createTaskSuccess } = useSelector((state) => state.task)
+  const { data,createTaskSuccess, deleteTaskSuccess, loading } = useSelector((state) => state.task)
   const {data: userData} = useSelector((state) => state.login)
   const { userDataResp } = useContext(UserContext)
 
@@ -33,30 +34,40 @@ export default function Dashboard() {
     if (userId) {
       dispatch(getTasks({ userId }));
     }
-  }, [createTaskSuccess, userId, userData, userDataResp])
+  }, [userId, dispatch]) // Initial load and when userId changes
+
+  // Separate effect for refreshing tasks after create/delete operations
+  useEffect(() => {
+    if (userId && (createTaskSuccess || deleteTaskSuccess)) {
+      dispatch(getTasks({ userId }));
+    }
+  }, [createTaskSuccess, deleteTaskSuccess, userId, dispatch])
 
   const [tasks, setTasks] = useState([])
 
   useEffect(() => {
-    if(data?.data){
-      setTasks(data?.data)
+    if(data?.data && !loading){
+      // Ensure data.data is an array before setting it
+      const tasksData = Array.isArray(data.data) ? data.data : [];
+      setTasks(tasksData)
     }
-  }, [data, createTaskSuccess])
+  }, [data, createTaskSuccess, loading])
 
-  const [filteredTasks, setFilteredTasks] = useState(tasks || [])
+  const [filteredTasks, setFilteredTasks] = useState([])
   const [searchQuery, setSearchQuery] = useState("")
   const [filterPriority, setFilterPriority] = useState("all")
   const [filterStatus, setFilterStatus] = useState("all")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
-
+  const [isEditTask, setIsEditTask] = useState(false)
   useEffect(() => {
-    let filtered = tasks
+    // Ensure tasks is always an array
+    let filtered = Array.isArray(tasks) ? tasks : [];
 
     if (searchQuery) {
       filtered = filtered.filter(
         (task) =>
-          task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          task.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           task.description?.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
@@ -79,20 +90,29 @@ export default function Dashboard() {
   const handleCreateTask = () => {
     setEditingTask(null)
     setIsDialogOpen(true)
+    setIsEditTask(false)
   }
 
-  const handleEditTask = (task) => {
+  const handleEditTask = (task) => {    
     setEditingTask(task)
     setIsDialogOpen(true)
+    setIsEditTask(true)
   }
 
   const handleSaveTask = (taskData) => {
+    console.log("da1 taskData",taskData)
+    console.log("da1 editingTask",editingTask)
     if (editingTask) {
-      setTasks((prev) =>
-        prev.map((task) =>
-          task.id === editingTask.id ? { ...task, ...taskData } : task
-        )
-      )
+      // setTasks((prev) =>
+      //   prev.map((task) =>
+      //     task.id === editingTask.id ? { ...task, ...taskData } : task
+      //   )
+      // )
+      const updatedTask = {
+        ...taskData,
+        userId: userId,
+      }
+      dispatch(updateTask(updatedTask))
     } else {
       const newTask = {
         ...taskData,
@@ -114,21 +134,32 @@ export default function Dashboard() {
   }
 
   const handleDeleteTask = (id) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id))
+    dispatch(deleteTask(id))
+
   }
+  useEffect(() => {
+    if(deleteTaskSuccess){
+      dispatch(getTasks({ userId }))
+    }
+  }, [deleteTaskSuccess])
 
 
   const taskStats = {
-    total: tasks?.length,
-    completed: tasks?.filter((t) => t.completed).length,
-    active: tasks?.filter((t) => !t.completed).length,
-    overdue: tasks?.filter(
+    total: Array.isArray(tasks) ? tasks.length : 0,
+    completed: Array.isArray(tasks) ? tasks.filter((t) => t.completed).length : 0,
+    active: Array.isArray(tasks) ? tasks.filter((t) => !t.completed).length : 0,
+    overdue: Array.isArray(tasks) ? tasks.filter(
       (t) => t.dueDate && new Date(t.dueDate) < new Date() && !t.completed
-    ).length,
+    ).length : 0,
+  }
+
+  // Check if user is authenticated, redirect if not
+  if (!userDataResp && typeof window !== 'undefined') {
+    window.location.href = '/Auth/Login';
+    return null;
   }
 
   return (
-    <ProtectedRoute>
       <div className="min-h-screen bg-gray-50">
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -201,6 +232,7 @@ export default function Dashboard() {
                 </DialogTrigger>
                 <TaskForm
                   task={editingTask}
+                  isEditTask={isEditTask}
                   onSave={handleSaveTask}
                   onCancel={() => setIsDialogOpen(false)}
                 />
@@ -209,7 +241,8 @@ export default function Dashboard() {
           </div>
 
           {/* Task List */}
-          <div className="bg-white rounded-lg border p-6">
+          <LoaderWrapper loading={loading}>
+          <div className="bg-white rounded-lg border p-6 w-full">
             <TaskList
               tasks={filteredTasks}
               onToggleComplete={handleToggleComplete}
@@ -218,8 +251,8 @@ export default function Dashboard() {
               onCreateTask={handleCreateTask}
             />
           </div>
+          </LoaderWrapper>
         </main>
       </div>
-    </ProtectedRoute>
   )
 }

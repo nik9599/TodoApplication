@@ -1,4 +1,5 @@
 import UserRepository from "./UserRepository.js";
+import LogService from "../../Logs/LogServices/LogService.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { validate } from "email-validator";
@@ -8,12 +9,14 @@ dotenv.config();
 class UserService {
 
     protected UserRepository: UserRepository;
+    private logService: LogService;
     private jwtSecret: string = "TodoApplication"; // Simple development secret
 
     private isUserTableExists: boolean = false;
 
     constructor() {
         this.UserRepository = new UserRepository();
+        this.logService = new LogService();
         this.checkIfTableExists();
     }
 
@@ -54,6 +57,8 @@ class UserService {
         try {
             const result = await this.UserRepository.getUserByEmail(req.body.email);
             if (!result?.id) {
+                // Log failed login attempt
+                await this.logService.logApiCall(req, res, Date.now(), "Invalid email or password");
                 return res.status(401).json({ message: "Invalid email or password", data: null });
             }
             const isPasswordValid = await this.comparePassword(req.body.password, result.password);
@@ -66,6 +71,9 @@ class UserService {
                     username: result.username,
                     email: result.email
                 };
+
+                // Log successful login
+                await this.logService.logUserLogin(result.id, result.username, result.email, req);
                 
                 return res
                 .cookie('token', token, {
@@ -78,14 +86,29 @@ class UserService {
                 .json({ message: "Login successful", data: userData });
             }
             
+            // Log failed login attempt
+            await this.logService.logApiCall(req, res, Date.now(), "Invalid password");
             return res.status(200).json({ message: "Invalid email or password", data: null });
         } catch (error) {
+            // Log error
+            await this.logService.logApiCall(req, res, Date.now(), error instanceof Error ? error.message : "Unknown error");
             return res.status(500).json({ message: "Server error", data: error });
         }
     }
 
     async logoutUser(req: any, res: any) {
-        return res.clearCookie('token').status(200).json({ message: "Logout successful" });
+        try {
+            // Log user logout if user is authenticated
+            if (req.user?.id) {
+                await this.logService.logUserLogout(req.user.id, req);
+            }
+            
+            return res.clearCookie('token').status(200).json({ message: "Logout successful" });
+        } catch (error) {
+            // Even if logging fails, still logout the user
+            console.error("Failed to log logout:", error);
+            return res.clearCookie('token').status(200).json({ message: "Logout successful" });
+        }
     }
 
     // verify token endpoint
@@ -219,32 +242,24 @@ class UserService {
     }
 
     // check if user is authenticated
-    userAuthenticated(req: any, res: any, next: any) {
-        console.log("🔐 Auth middleware - Headers:", req.headers);
-        console.log("🍪 Auth middleware - Cookies:", req.cookies);
-        
+    userAuthenticated(req: any, res: any, next: any) {        
         // First try to get token from Authorization header
         let token = req.headers.authorization?.split(" ")[1];
-        console.log("📋 Token from header:", token);
         
         // If no token in header, try to get from cookies
         if (!token) {
             token = req.cookies?.token;
-            console.log("🍪 Token from cookies:", token);
         }
         
         if (!token) {
-            console.log("❌ No token found anywhere");
             return res.status(401).json({ message: "Unauthorized - No token found" });
         }
         
         try {
             const decoded = jwt.verify(token,  "TodoApplication");
-            console.log("✅ Token verified, user:", decoded);
             req.user = decoded;
             next();
         } catch (error) {
-            console.log("💥 Token verification failed:", error);
             return res.status(401).json({ message: "Unauthorized - Invalid token" });
         }
     }

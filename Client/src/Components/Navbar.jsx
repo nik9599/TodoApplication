@@ -49,7 +49,6 @@ export default function NavBar() {
                   onClick={handleLogout}
                   className="flex items-center gap-2"
                   disabled={loading}
-                  loading={loading}
                 >
                   <LogOut className="h-4 w-4" />
                   {loading ? "Logging out..." : "Logout"}
