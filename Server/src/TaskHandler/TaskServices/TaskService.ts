@@ -140,36 +140,25 @@ class TaskServices {
 
   async createTask(req: any, res: any) {
     try {
-      console.log('=== CREATE TASK DEBUG ===');
-      console.log('Request body:', req.body);
       const { title, description, completed, priority, userId, dueDate } = req.body;
-      console.log('Extracted values:', { title, description, completed, priority, userId, dueDate });
-      
       const isUserExists = await this.UserService.isUserExists(userId);
-      console.log('User exists check:', isUserExists);
       if (!isUserExists) {
-        console.log('User not found, returning error');
         return res.status(400).json({ message: "User not found", isError: true, data: [] });
       }
       if(!title || !description || !priority || !userId){
-        console.log('Missing required fields:', { title: !!title, description: !!description, priority: !!priority, userId: !!userId });
         return res.status(400).json({ message: "Title, description, priority, userId are required", isError: true, data: [] });
       }
 
       let parsedDueDate: Date | null = null;
       if (dueDate) {
-        console.log('Processing dueDate:', dueDate);
         const tmp = new Date(dueDate);
-        console.log('Parsed dueDate:', tmp);
         if (isNaN(tmp.getTime())) {
-          console.log('Invalid dueDate format');
           return res.status(400).json({ message: "Invalid dueDate", isError: true, data: [] });
         }
         parsedDueDate = tmp;
       }
 
       const taskLength = await this.TaskRepository?.getAllTaskLength();
-      console.log('Task length for ID generation:', taskLength);
       const task: Task = {
         id: String(taskLength),
         title: title || "Untitled",
@@ -181,7 +170,6 @@ class TaskServices {
         userId: userId || "No user id",
         dueDate: parsedDueDate,
       };
-      console.log('Task object to create:', task);
       const result = await this.TaskRepository.createTask(task);
       console.log('Repository result:', result);
       if (result) {
