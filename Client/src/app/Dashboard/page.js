@@ -14,44 +14,62 @@ import {
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { TaskList } from "@/components/task/taskList"
 import { TaskForm } from "@/components/task/taskForm"
-import { Plus, LogOut, Search, User } from "lucide-react"
+import { Plus, LogOut, Search, User, CheckCircle2 } from "lucide-react"
 import { useDispatch, useSelector } from "react-redux"
 import { createTask, deleteTask, getTasks, updateTask } from "@/app/TaskReducer/TaskReducer.reducer"
-// Removed ProtectedRoute import - using UserProvider for auth instead
 import { UserContext } from "@/Components/ContextualStore/UserContext"
 import LoaderWrapper from "@/Components/ui/LoaderWrapper"
+import { Alert, AlertTitle, AlertDescription } from "@/Components/ui/alert"
 
 export default function Dashboard() {
   const dispatch = useDispatch()
-  const { data,createTaskSuccess, deleteTaskSuccess, loading } = useSelector((state) => state.task)
+  const { data,createTaskSuccess, deleteTaskSuccess, updateTaskSuccess, loading } = useSelector((state) => state.task)
   const {data: userData} = useSelector((state) => state.login)
   const { userDataResp } = useContext(UserContext)
 
-  // Get userId from multiple sources with localStorage fallback
   const userId = userData?.data?.id || userDataResp?.id || (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userData') || '{}').id : null)
 
   useEffect(() => {
     if (userId) {
       dispatch(getTasks({ userId }));
     }
-  }, [userId, dispatch]) // Initial load and when userId changes
+  }, [userId, dispatch])
 
-  // Separate effect for refreshing tasks after create/delete operations
   useEffect(() => {
-    if (userId && (createTaskSuccess || deleteTaskSuccess)) {
+    if (userId && (createTaskSuccess || deleteTaskSuccess || updateTaskSuccess)) {
       dispatch(getTasks({ userId }));
     }
-  }, [createTaskSuccess, deleteTaskSuccess, userId, dispatch])
+  }, [createTaskSuccess, deleteTaskSuccess, updateTaskSuccess, userId, dispatch])
+
+  useEffect(() => {
+    if (createTaskSuccess) {
+      setSuccessMessage("Task created successfully!");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }
+  }, [createTaskSuccess])
+
+  useEffect(() => {
+    if (updateTaskSuccess) {
+      setSuccessMessage("Task updated successfully!");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }
+  }, [updateTaskSuccess])
+
+  useEffect(() => {
+    if (deleteTaskSuccess) {
+      setSuccessMessage("Task deleted successfully!");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }
+  }, [deleteTaskSuccess])
 
   const [tasks, setTasks] = useState([])
 
   useEffect(() => {
     if(data?.data && !loading){
-      // Ensure data.data is an array before setting it
       const tasksData = Array.isArray(data.data) ? data.data : [];
       setTasks(tasksData)
     }
-  }, [data, createTaskSuccess, loading])
+  }, [data, createTaskSuccess, updateTaskSuccess, loading])
 
   const [filteredTasks, setFilteredTasks] = useState([])
   const [searchQuery, setSearchQuery] = useState("")
@@ -60,6 +78,7 @@ export default function Dashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [isEditTask, setIsEditTask] = useState(false)
+  const [successMessage, setSuccessMessage] = useState(null)
   useEffect(() => {
     // Ensure tasks is always an array
     let filtered = Array.isArray(tasks) ? tasks : [];
@@ -100,8 +119,6 @@ export default function Dashboard() {
   }
 
   const handleSaveTask = (taskData) => {
-    console.log("da1 taskData",taskData)
-    console.log("da1 editingTask",editingTask)
     if (editingTask) {
       // setTasks((prev) =>
       //   prev.map((task) =>
@@ -126,11 +143,17 @@ export default function Dashboard() {
   }
 
   const handleToggleComplete = (id) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    )
+    const fetchTask = filteredTasks.find((task) => task.id === id)
+    const updatedTask = {
+      completed: !fetchTask.completed || false,
+      id: fetchTask.id || '',
+      title: fetchTask.title || '',
+      description: fetchTask.description || '',
+      priority: fetchTask.priority || '',
+      dueDate: fetchTask.dueDate || '',
+      userId: userId || '',
+    }
+    dispatch(updateTask(updatedTask))
   }
 
   const handleDeleteTask = (id) => {
@@ -161,7 +184,15 @@ export default function Dashboard() {
 
   return (
       <div className="min-h-screen bg-gray-50">
-        {/* Main Content */}
+        {successMessage && (
+          <div className="fixed top-4 right-4 z-50 max-w-md transition-all duration-300 ease-in-out">
+            <Alert variant="success" dismissible onDismiss={() => setSuccessMessage(null)}>
+              <CheckCircle2 className="h-5 w-5" />
+              <AlertTitle>Success</AlertTitle>
+              <AlertDescription>{successMessage}</AlertDescription>
+            </Alert>
+          </div>
+        )}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">

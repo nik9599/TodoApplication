@@ -67,7 +67,7 @@ export function TaskItem({ task, onToggleComplete, onEdit, onDelete }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <CardContent className="p-4">
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3 pt-2">
           <input
             type="checkbox"
             checked={task.completed}
